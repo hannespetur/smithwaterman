@@ -23,11 +23,13 @@
 //
 // In practice, we must call this function until the alignment is stabilized.
 //
-bool leftAlign(string& querySequence, string& cigar, string& baseReferenceSequence, int& offset, bool debug) {
+bool leftAlign(std::string& querySequence, std::string& cigar, std::string& baseReferenceSequence, int& offset, bool debug)
+{
+  using namespace std;
 
   debug = false;
 
-  string referenceSequence = baseReferenceSequence.substr(offset);
+  std::string referenceSequence = baseReferenceSequence.substr(offset);
 
   int arsOffset = 0; // pointer to insertion point in aligned reference sequence
   string alignedReferenceSequence, alignedQuerySequence;
@@ -277,13 +279,18 @@ bool leftAlign(string& querySequence, string& cigar, string& baseReferenceSequen
     }
   }
 
-  if (debug) {
-    for (vector<IndelAllele>::iterator a = indels.begin(); a != indels.end(); ++a) cerr << *a << " ";
-    cerr << endl;
+  if (debug)
+  {
+    for (vector<IndelAllele>::iterator a = indels.begin(); a != indels.end(); ++a)
+      std::cerr << *a << " ";
+
+    std::cerr << endl;
   }
 
-
-  if (debug) cerr << "bring in indels at ends of read" << endl;
+  if (debug)
+  {
+    std::cerr << "bring in indels at ends of read" << std::endl;
+  }
 
   // try to "bring in" repeat indels at the end, for maximum parsimony
   //
@@ -299,7 +306,8 @@ bool leftAlign(string& querySequence, string& cigar, string& baseReferenceSequen
   //
   // here we take the parsimonious explanation
 
-  if (!indels.empty()) {
+  if (!indels.empty())
+  {
     // deal with the first indel
     // the first deletion ... or the biggest deletion
     vector<IndelAllele>::iterator a = indels.begin();
@@ -677,9 +685,8 @@ bool leftAlign(string& querySequence, string& cigar, string& baseReferenceSequen
     if (indel.length == 0) continue; // remove 0-length indels
     if (debug) cerr << indel << " " << *last << endl;
     LEFTALIGN_DEBUG(indel << ",");
-    if ((id + 1) == newIndels.end()
-      && (indel.insertion && indel.position == static_cast<int>(referenceSequence.size())
-        || (!indel.insertion && indel.position + indel.length == static_cast<int>(referenceSequence.size())))
+    if ((id + 1) == newIndels.end() && (indel.insertion && (indel.position == static_cast<int>(referenceSequence.size())
+        || (!indel.insertion && indel.position + indel.length == static_cast<int>(referenceSequence.size()))))
       ) {
       if (indel.insertion) {
         if (!newCigar.empty() && newCigar.back().second == "S") {
@@ -688,29 +695,47 @@ bool leftAlign(string& querySequence, string& cigar, string& baseReferenceSequen
           newCigar.push_back(make_pair(indel.length, "S"));
         }
       }
-    } else if (indel.position < lastend) {
+    }
+    else if (indel.position < lastend)
+    {
       cerr << "impossibility?: indel realigned left of another indel" << endl;
       return false;
-    } else if (indel.position == lastend) {
+    }
+    else if (indel.position == lastend)
+    {
       // how?
-      if (indel.insertion == last->insertion) {
+      if (indel.insertion == last->insertion)
+      {
         pair<int, string>& op = newCigar.back();
         op.first += indel.length;
-      } else {
+      }
+      else
+      {
         newCigar.push_back(make_pair(indel.length, (indel.insertion ? "I" : "D")));
       }
-    } else if (indel.position > lastend) {  // also catches differential indels, but with the same position
-      if (!newCigar.empty() && newCigar.back().second == "M") newCigar.back().first += indel.position - lastend;
-      else newCigar.push_back(make_pair(indel.position - lastend, "M"));
+    }
+    else if (indel.position > lastend)
+    {  // also catches differential indels, but with the same position
+      if (!newCigar.empty() && newCigar.back().second == "M")
+      {
+        newCigar.back().first += indel.position - lastend;
+      }
+      else
+      {
+        newCigar.push_back(make_pair(indel.position - lastend, "M"));
+      }  
+
       newCigar.push_back(make_pair(indel.length, (indel.insertion ? "I" : "D")));
     }
 
     last = id;
     lastend = last->insertion ? last->position : (last->position + last->length);
 
-    if (debug) {
+    if (debug)
+    {
       for (vector<pair<int, string> >::iterator c = newCigar.begin(); c != newCigar.end(); ++c)
         cerr << c->first << c->second;
+
       cerr << endl;
     }
 
@@ -745,7 +770,9 @@ bool leftAlign(string& querySequence, string& cigar, string& baseReferenceSequen
 
 }
 
-int countMismatches(string& querySequence, string& cigar, string referenceSequence) {
+int countMismatches(std::string& querySequence, std::string& cigar, std::string referenceSequence)
+{
+  using namespace std;
 
   int mismatches = 0;
   int sp = 0;
@@ -782,7 +809,8 @@ int countMismatches(string& querySequence, string& cigar, string referenceSequen
 // realignment.  Returns true on realignment success or non-realignment.
 // Returns false if we exceed the maximum number of realignment iterations.
 //
-bool stablyLeftAlign(string querySequence, string& cigar, string referenceSequence, int& offset, int maxiterations, bool debug) {
+bool stablyLeftAlign(std::string querySequence, std::string& cigar, std::string referenceSequence, int& offset, int maxiterations)
+{
 
   if (!leftAlign(querySequence, cigar, referenceSequence, offset)) {
 
@@ -803,26 +831,32 @@ bool stablyLeftAlign(string querySequence, string& cigar, string referenceSequen
   }
 }
 
-string mergeCIGAR(const string& c1, const string& c2) {
-  vector<pair<int, string> > cigar1 = splitCIGAR(c1);
-  vector<pair<int, string> > cigar2 = splitCIGAR(c2);
+std::string mergeCIGAR(const std::string& c1, const std::string& c2)
+{
+  std::vector<std::pair<int, std::string> > cigar1 = splitCIGAR(c1);
+  std::vector<std::pair<int, std::string> > cigar2 = splitCIGAR(c2);
   // check if the middle elements are the same
-  if (cigar1.back().second == cigar2.front().second) {
+  if (cigar1.back().second == cigar2.front().second)
+  {
     cigar1.back().first += cigar2.front().first;
     cigar2.erase(cigar2.begin());
   }
-  for (vector<pair<int, string> >::iterator c = cigar2.begin(); c != cigar2.end(); ++c) {
+
+  for (std::vector<std::pair<int, std::string> >::iterator c = cigar2.begin(); c != cigar2.end(); ++c)
+  {
     cigar1.push_back(*c);
   }
+
   return joinCIGAR(cigar1);
 }
 
-vector<pair<int, string> > splitCIGAR(const string& cigarStr) {
-  vector<pair<int, string> > cigar;
-  string number;
-  string type;
+std::vector<std::pair<int, std::string> > splitCIGAR(const std::string& cigarStr)
+{
+  std::vector<std::pair<int, std::string> > cigar;
+  std::string number;
+  std::string type;
   // strings go [Number][Type] ...
-  for (string::const_iterator s = cigarStr.begin(); s != cigarStr.end(); ++s) {
+  for (std::string::const_iterator s = cigarStr.begin(); s != cigarStr.end(); ++s) {
     char c = *s;
     if (isdigit(c)) {
       if (type.empty()) {
@@ -844,9 +878,10 @@ vector<pair<int, string> > splitCIGAR(const string& cigarStr) {
   return cigar;
 }
 
-string joinCIGAR(const vector<pair<int, string> >& cigar) {
-  string cigarStr;
-  for (vector<pair<int, string> >::const_iterator c = cigar.begin(); c != cigar.end(); ++c) {
+std::string joinCIGAR(const std::vector<std::pair<int, std::string> >& cigar)
+{
+  std::string cigarStr;
+  for (std::vector<std::pair<int, std::string> >::const_iterator c = cigar.begin(); c != cigar.end(); ++c) {
     if (c->first) {
       cigarStr += convert(c->first) + c->second;
     }

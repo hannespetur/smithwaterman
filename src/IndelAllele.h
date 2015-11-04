@@ -5,10 +5,8 @@
 #include <iostream>
 #include <sstream>
 
-using namespace std;
-
 class IndelAllele {
-    friend ostream& operator<<(ostream&, const IndelAllele&);
+    friend std::ostream& operator<<(std::ostream&, const IndelAllele&);
     friend bool operator==(const IndelAllele&, const IndelAllele&);
     friend bool operator!=(const IndelAllele&, const IndelAllele&);
     friend bool operator<(const IndelAllele&, const IndelAllele&);
@@ -19,17 +17,17 @@ public:
     int readLength(void);
     int position;
     int readPosition;
-    string sequence;
+    std::string sequence;
 
     bool homopolymer(void);
 
-    IndelAllele(bool i, int l, int p, int rp, string s)
+    IndelAllele(bool i, int l, int p, int rp, std::string s)
         : insertion(i), length(l), position(p), readPosition(rp), sequence(s)
     { }
 };
 
-bool homopolymer(string sequence);
-ostream& operator<<(ostream& out, const IndelAllele& indel);
+bool homopolymer(std::string sequence);
+std::ostream& operator<<(std::ostream& out, const IndelAllele& indel);
 bool operator==(const IndelAllele& a, const IndelAllele& b);
 bool operator!=(const IndelAllele& a, const IndelAllele& b);
 bool operator<(const IndelAllele& a, const IndelAllele& b);

@@ -18,15 +18,13 @@
 #define LEFTALIGN_DEBUG(msg)
 #endif
 
-using namespace std;
+bool leftAlign(std::string& alternateQuery, std::string& cigar, std::string& referenceSequence, int& offset, bool debug = false);
+bool stablyLeftAlign(std::string alternateQuery, std::string& cigar, std::string referenceSequence, int& offset, int maxiterations = 20);
+int countMismatches(std::string& alternateQuery, std::string& cigar, std::string& referenceSequence);
 
-bool leftAlign(string& alternateQuery, string& cigar, string& referenceSequence, int& offset, bool debug = false);
-bool stablyLeftAlign(string alternateQuery, string& cigar, string referenceSequence, int& offset, int maxiterations = 20, bool debug = false);
-int countMismatches(string& alternateQuery, string& cigar, string& referenceSequence);
-
-string mergeCIGAR(const string& c1, const string& c2);
-vector<pair<int, string> > splitCIGAR(const string& cigarStr);
-string joinCIGAR(const vector<pair<int, string> >& cigar);
+std::string mergeCIGAR(const std::string& c1, const std::string& c2);
+std::vector<std::pair<int, std::string> > splitCIGAR(const std::string& cigarStr);
+std::string joinCIGAR(const std::vector<std::pair<int, std::string> >& cigar);
 
 
 #endif
